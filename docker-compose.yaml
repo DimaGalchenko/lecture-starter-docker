@@ -2,10 +2,38 @@ version: "3.9"
 
 services:
   api:
-    # Add configuration here
-
+    build:
+      context: ./backend
+      dockerfile: deployment/Dockerfile
+    environment:
+      - POSTGRES_HOST=database
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DATABASE=lecture-docker-starter
+    ports:
+      - "4001:4001"
+    depends_on:
+      - database
   web:
-    # Add configuration here
+    build:
+      context: ./frontend
+      dockerfile: deployment/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - api
 
   database:
-    # Add configuration here
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=lecture-docker-starter
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
